@@ -1,8 +1,9 @@
-import '../styles/globals.css';
-import '@rainbow-me/rainbowkit/styles.css';
-import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import type { AppProps } from 'next/app';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import "../styles/globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
+import dynamic from "next/dynamic";
+import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import type { AppProps } from "next/app";
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
   arbitrum,
   goerli,
@@ -11,8 +12,10 @@ import {
   polygon,
   base,
   zora,
-} from 'wagmi/chains';
-import { publicProvider } from 'wagmi/providers/public';
+  sepolia,
+} from "wagmi/chains";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import { publicProvider } from "wagmi/providers/public";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
@@ -22,14 +25,17 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     arbitrum,
     base,
     zora,
-    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [goerli] : []),
+    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [sepolia] : []),
   ],
-  [publicProvider()]
+  [
+    alchemyProvider({ apiKey: "hC8JdMxpCkOXtKvfw4WcGS8N_AeC9f8x" }),
+    publicProvider(),
+  ]
 );
 
 const { connectors } = getDefaultWallets({
-  appName: 'RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  appName: "RainbowKit App",
+  projectId: "34bffa27cb5cb61805579d4ba3835d28",
   chains,
 });
 
@@ -40,11 +46,15 @@ const wagmiConfig = createConfig({
   webSocketPublicClient,
 });
 
+const Layout = dynamic(() => import("./layout"), { ssr: false });
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </RainbowKitProvider>
     </WagmiConfig>
   );
