@@ -28,14 +28,14 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
     ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [sepolia] : []),
   ],
   [
-    alchemyProvider({ apiKey: "hC8JdMxpCkOXtKvfw4WcGS8N_AeC9f8x" }),
+    alchemyProvider({ apiKey: "" }),
     publicProvider(),
   ]
 );
 
 const { connectors } = getDefaultWallets({
   appName: "RainbowKit App",
-  projectId: "34bffa27cb5cb61805579d4ba3835d28",
+  projectId: "",
   chains,
 });
 
