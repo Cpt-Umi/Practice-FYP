@@ -1,5 +1,5 @@
 import React from "react";
-import { useAccount, useDisconnect } from "wagmi";
+import { useDisconnect } from "wagmi";
 import { useRouter } from "next/router";
 
 const Manufacturer = () => {
