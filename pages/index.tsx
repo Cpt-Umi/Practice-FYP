@@ -4,16 +4,39 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const Home: NextPage = () => {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const router = useRouter();
 
-  const handlerOne = (connect: Function): void => {
-    connect();
-    router.push("./signup");
+  const handlerOne = async () => {
+    console.log("Address before fetch:", address);
+
+    try {
+      const res = await fetch(`/api/login?address=${address}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        disconnect();
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      } else {
+        const userData = await res.json();
+        router.push(`/${userData.user.role}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  useEffect(() => {
+    if (isConnected) {
+      handlerOne();
+    }
+  }, [isConnected]);
 
   const handler = (): void => {
     disconnect();
@@ -37,9 +60,11 @@ const Home: NextPage = () => {
               <button
                 type="button"
                 disabled={!ready}
-                onClick={() => handlerOne(connect)}
+                onClick={() => {
+                  connect();
+                }}
               >
-                Metamask
+                Metamask Login
               </button>
             );
           }}
